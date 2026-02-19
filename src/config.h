@@ -33,7 +33,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 #include <WiFi.h>
 #include <esp32_can.h>
-#include <esp32_mcp2517fd.h>
+// #include <esp32_mcp2517fd.h>
 #include <Preferences.h>
 
 //size to use for buffering writes to USB. On the ESP32 we're actually talking TTL serial to a TTL<->USB chip
@@ -117,20 +117,20 @@ struct EEPROMSettings {
 } __attribute__((__packed__));
 
 struct SystemSettings {
-    uint8_t LED_CANTX;
-    uint8_t LED_CANRX;
-    uint8_t LED_LOGGING;
-    uint8_t LED_CONNECTION_STATUS;
-    boolean fancyLED;
-    boolean txToggle; //LED toggle values
-    boolean rxToggle;
-    boolean logToggle;
-    boolean lawicelMode;
-    boolean lawicellExtendedMode;
-    boolean lawicelAutoPoll;
-    boolean lawicelTimestamping;
-    int lawicelPollCounter;
-    boolean lawicelBusReception[NUM_BUSES]; //does user want to see messages from this bus?
+    // uint8_t LED_CANTX;
+    // uint8_t LED_CANRX;
+    // uint8_t LED_LOGGING;
+    // uint8_t LED_CONNECTION_STATUS;
+    // boolean fancyLED;
+    // boolean txToggle; //LED toggle values
+    // boolean rxToggle;
+    // boolean logToggle;
+    // boolean lawicelMode;
+    // boolean lawicellExtendedMode;
+    // boolean lawicelAutoPoll;
+    // boolean lawicelTimestamping;
+    // int lawicelPollCounter;
+    // boolean lawicelBusReception[NUM_BUSES]; //does user want to see messages from this bus?
     int8_t numBuses; //number of buses this hardware currently supports.
     WiFiClient clientNodes[MAX_CLIENTS];
     WiFiClient wifiOBDClients[MAX_CLIENTS];

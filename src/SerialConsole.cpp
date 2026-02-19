@@ -34,7 +34,6 @@
 #include <Preferences.h>
 #include "config.h"
 #include "sys_io.h"
-#include "lawicel.h"
 #include "ELM327_Emulator.h"
 #include "can_manager.h"
 
@@ -137,7 +136,7 @@ void SerialConsole::handleConsoleCmd()
             for (int i = 0; i < ptrBuffer; i++) if (cmdBuffer[i] == '=') equalSign = true;
             cmdBuffer[ptrBuffer] = 0; //make sure to null terminate
             if (equalSign) handleConfigCmd();
-            else if (settings.enableLawicel) lawicel.handleLongCmd(cmdBuffer);
+            // else if (settings.enableLawicel) lawicel.handleLongCmd(cmdBuffer);
         }
         ptrBuffer = 0; //reset line counter once the line has been processed
     }
@@ -163,15 +162,15 @@ void SerialConsole::handleShortCmd()
     case '~':
         Serial.println("DEBUGGING MODE!");
         CAN0.setDebuggingMode(true);
-        CAN1.setDebuggingMode(true);
+        // CAN1.setDebuggingMode(true);
         break;
     case '`':
         Serial.println("Normal mode");
         CAN0.setDebuggingMode(false);
-        CAN1.setDebuggingMode(false);
+        // CAN1.setDebuggingMode(false);
         break;    
     default:
-        if (settings.enableLawicel) lawicel.handleShortCmd(cmdBuffer[0]);
+        // if (settings.enableLawicel) lawicel.handleShortCmd(cmdBuffer[0]);
         break;
     }
 }
@@ -528,8 +527,6 @@ bool SerialConsole::handleCANSend(CAN_COMMON &port, char *inputString)
     port.sendFrame(frame);
     
     Logger::console("Sending frame with id: 0x%x len: %i", frame.id, frame.length);
-    SysSettings.txToggle = !SysSettings.txToggle;
-    setLED(SysSettings.LED_CANTX, SysSettings.txToggle);
     return true;
 }
 

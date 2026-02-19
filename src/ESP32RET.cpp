@@ -28,21 +28,12 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 #include "config.h"
 #include <esp32_can.h>
-#include <SPI.h>
-#include <esp32_mcp2517fd.h>
 #include <Preferences.h>
 #include "ELM327_Emulator.h"
 #include "SerialConsole.h"
 #include "wifi_manager.h"
 #include "gvret_comm.h"
 #include "can_manager.h"
-#include "lawicel.h"
-
-// on the S3 we want the default pins to be different
-#ifdef CONFIG_IDF_TARGET_ESP32S3
-// MCP2517FD CAN1(10, 3);
-MCP2517FD CAN1(1, 2);
-#endif
 
 byte i = 0;
 
@@ -67,7 +58,7 @@ WiFiManager wifiManager;
 GVRET_Comm_Handler serialGVRET; // gvret protocol over the serial to USB connection
 GVRET_Comm_Handler wifiGVRET;   // GVRET over the wifi telnet port
 CANManager canManager;          // keeps track of bus load and abstracts away some details of how things are done
-LAWICELHandler lawicel;
+// LAWICELHandler lawicel;
 
 SerialConsole console;
 
@@ -102,19 +93,6 @@ void loadSettings()
     Logger::console("Running on EVTV ESP32-S3 Board");
     canBuses[0] = &CAN0;
     CAN0.setCANPins(GPIO_NUM_4, GPIO_NUM_5); // rx, tx - This is the SWCAN interface
-    SysSettings.LED_CANTX = RGB_BUILTIN;     // 18;
-    SysSettings.LED_CANRX = RGB_BUILTIN;     // 18;
-    SysSettings.LED_LOGGING = RGB_BUILTIN;
-    SysSettings.LED_CONNECTION_STATUS = 0;
-    SysSettings.fancyLED = false;
-    SysSettings.logToggle = false;
-    SysSettings.txToggle = true;
-    SysSettings.rxToggle = true;
-    SysSettings.lawicelAutoPoll = false;
-    SysSettings.lawicelMode = false;
-    SysSettings.lawicellExtendedMode = false;
-    SysSettings.lawicelTimestamping = false;
-    SysSettings.lawicelPollCounter = 0;
     SysSettings.numBuses = 1;
     SysSettings.isWifiActive = false;
     SysSettings.isWifiConnected = false;
@@ -171,8 +149,6 @@ void loadSettings()
 
     Logger::setLoglevel((Logger::LogLevel)settings.logLevel);
 
-    for (int rx = 0; rx < NUM_BUSES; rx++)
-        SysSettings.lawicelBusReception[rx] = true; // default to showing messages on RX
 }
 
 void setup()
@@ -253,10 +229,6 @@ void loop()
     uint8_t in_byte;
 
     /*if (Serial)*/ isConnected = true;
-
-    if (SysSettings.lawicelPollCounter > 0)
-        SysSettings.lawicelPollCounter--;
-    //}
 
     canManager.loop();
     wifiManager.loop();

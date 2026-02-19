@@ -30,7 +30,6 @@ void GVRET_Comm_Handler::processIncomingByte(uint8_t in_byte)
         else if(in_byte == 0xE7)
         {
             settings.useBinarySerialComm = true;
-            SysSettings.lawicelMode = false;
             //setPromiscuousMode(); //going into binary comm will set promisc. mode too.
         } 
         else
@@ -417,7 +416,7 @@ void GVRET_Comm_Handler::processIncomingByte(uint8_t in_byte)
                     //temp8 = checksumCalc(buff, step);
                     //if (temp8 == in_byte)
                     //{
-                    toggleRXLED();
+
                     //if(isConnected) {
                     canManager.displayFrame(build_out_frame, 0);
                     //}
