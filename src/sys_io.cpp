@@ -31,26 +31,24 @@ by stimmer
 */
 
 #include "sys_io.h"
-#include <FastLED.h>
-
-extern CRGB leds[A5_NUM_LEDS];
 
 bool useRawADC = false;
 
 #undef HID_ENABLED
 
-uint8_t dig[NUM_DIGITAL];   //digital inputs. sudo/analogue inputs
+uint8_t dig[NUM_DIGITAL];   // digital inputs. sudo/analogue inputs
 uint8_t adc[NUM_ANALOG][2]; // [x][0]This holds the ADC Channel number. // This is calculated in sys_early_setup()
                             // [x][1]This holds the pointer of the ADC number position into the adc_buf[x][x] array (Now redundent).
                             // This is calculated in sys_early_setup()
-uint8_t out[NUM_OUTPUT];    //digital output configuration details
+uint8_t out[NUM_OUTPUT];    // digital output configuration details
 
 uint32_t Enabled_Analogue_Pins = 0; // Sum of ADC input numbers to load into ADC_CHER
 
-ADC_COMP adc_comp[NUM_ANALOG]; //holds ADC offset or gain
+ADC_COMP adc_comp[NUM_ANALOG]; // holds ADC offset or gain
 
-//forces the digital I/O ports to a safe state. This is called very early in initialization.
-void sys_early_setup(){
+// forces the digital I/O ports to a safe state. This is called very early in initialization.
+void sys_early_setup()
+{
     uint8_t i;
 }
 
@@ -70,7 +68,8 @@ Testing to find a good batch of settings for how fast to do ADC readings. The re
 1. In the adc_init call it is possible to use something other than ADC_FREQ_MAX to slow down the ADC clock
 2. ADC_MR has a clock divisor, start up time, settling time, tracking time, and transfer time. These can be adjusted
 */
-void setupFastADC(){
+void setupFastADC()
+{
     Logger::debug("Fast ADC Mode Enabled");
 }
 
@@ -82,10 +81,12 @@ because the actual work is done via DMA and then a separate polled step.
 uint16_t getAnalog(uint8_t which)
 {
 
-    if (which >= NUM_ANALOG) which = 0;
-    if (adc[which][0] > 15) which = 0;
+    if (which >= NUM_ANALOG)
+        which = 0;
+    if (adc[which][0] > 15)
+        which = 0;
 
-    return 0;//adc_out_vals[which];
+    return 0; // adc_out_vals[which];
 }
 
 /*
@@ -93,41 +94,52 @@ get value of one of the sudo 6 digital/Analogue inputs 0->(NUM_DIGITAL - 1)
 */
 boolean getDigital(uint8_t which)
 {
-    if((which >= NUM_OUTPUT) || (dig[which] == 255)){
-        return(false);
+    if ((which >= NUM_OUTPUT) || (dig[which] == 255))
+    {
+        return (false);
     }
-    return(false); //(adc_out_vals[which] > 200) ? true : false);
+    return (false); //(adc_out_vals[which] > 200) ? true : false);
 }
 
-//set output high or not
+// set output high or not
 void setOutput(uint8_t which, boolean active)
 {
-    if((which >= NUM_OUTPUT) || (out[which] == 255)){
+    if ((which >= NUM_OUTPUT) || (out[which] == 255))
+    {
         return;
     }
-    if(active){
+    if (active)
+    {
         (which <= 2) ? digitalWrite(out[which], HIGH) : digitalWrite(out[which], LOW);
-    }else{
+    }
+    else
+    {
         (which <= 2) ? digitalWrite(out[which], LOW) : digitalWrite(out[which], HIGH);
     }
 }
 
-//get current value of output state (high?)
+// get current value of output state (high?)
 boolean getOutput(uint8_t which)
 {
-    if((which >= NUM_OUTPUT) || (out[which] == 255)){
+    if ((which >= NUM_OUTPUT) || (out[which] == 255))
+    {
         return false;
     }
     return digitalRead(out[which]);
 }
 
-void setLED(uint8_t which, boolean hi){
-    if(which == 255){
+void setLED(uint8_t which, boolean hi)
+{
+    if (which == 255)
+    {
         return;
     }
-    if(hi){
+    if (hi)
+    {
         digitalWrite(which, HIGH);
-    } else{
+    }
+    else
+    {
         digitalWrite(which, LOW);
     }
 }
@@ -136,13 +148,17 @@ void toggleRXLED()
 {
     static int counter = 0;
     counter++;
-    if (counter >= BLINK_SLOWNESS) {
+    if (counter >= BLINK_SLOWNESS)
+    {
         counter = 0;
         SysSettings.rxToggle = !SysSettings.rxToggle;
-        if (!SysSettings.fancyLED) setLED(SysSettings.LED_CANRX, SysSettings.rxToggle);
-        else
+        if (SysSettings.rxToggle)
         {
-          leds[SysSettings.LED_CANRX] = SysSettings.rxToggle?CRGB::Blue:CRGB::Black;
+            rgbLedWrite(RGB_BUILTIN,0,RGB_BRIGHTNESS,0); // Green
+        }
+        else
+        {   
+            rgbLedWrite(RGB_BUILTIN,0,0,0); // Off
         };
     }
 }
@@ -151,13 +167,17 @@ void toggleTXLED()
 {
     static int counter = 0;
     counter++;
-    if (counter >= BLINK_SLOWNESS) {
+    if (counter >= BLINK_SLOWNESS)
+    {
         counter = 0;
         SysSettings.txToggle = !SysSettings.txToggle;
-        if (!SysSettings.fancyLED) setLED(SysSettings.LED_CANTX, SysSettings.txToggle);
-        else
+        if (SysSettings.txToggle)
         {
-          leds[SysSettings.LED_CANRX] = SysSettings.rxToggle?CRGB::Green:CRGB::Black;
-        };
+            rgbLedWrite(RGB_BUILTIN, RGB_BRIGHTNESS, RGB_BRIGHTNESS, 0); // Yellow
+        }
+        else
+        {   
+            rgbLedWrite(RGB_BUILTIN, 0, 0, 0); // Off
+        }
     }
 }
