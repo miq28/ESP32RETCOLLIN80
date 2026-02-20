@@ -161,6 +161,7 @@ void WiFiManager::setup()
 
     if (settings.enableBT != 0)
         return;                 // No wifi if BT is on
+
     if (settings.wifiMode == 1) // connect to an AP
     {
         // Examples of different ways to register wifi events;

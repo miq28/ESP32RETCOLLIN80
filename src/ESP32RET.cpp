@@ -81,7 +81,7 @@ void loadSettings()
     settings.logLevel = nvPrefs.getUChar("loglevel", 1); // info
     settings.wifiMode = nvPrefs.getUChar("wifiMode", 1); // Wifi defaults to creating an AP
     settings.enableBT = nvPrefs.getBool("enable-bt", false);
-    settings.enableLawicel = nvPrefs.getBool("enableLawicel", true);
+    settings.enableLawicel = nvPrefs.getBool("enableLawicel", false);
     settings.sendingBus = nvPrefs.getInt("sendingBus", 0);
 
     uint8_t defaultVal = (espChipRevision > 2) ? 0 : 1; // 0 = A0, 1 = EVTV ESP32
@@ -92,7 +92,8 @@ void loadSettings()
 
     Logger::console("Running on EVTV ESP32-S3 Board");
     canBuses[0] = &CAN0;
-    CAN0.setCANPins(GPIO_NUM_4, GPIO_NUM_5); // rx, tx - This is the SWCAN interface
+    // CAN0.setCANPins(GPIO_NUM_4, GPIO_NUM_5); // rx, tx - This is the SWCAN interface
+    CAN0.setCANPins(GPIO_NUM_26, GPIO_NUM_27); // rx, tx - This is the SWCAN interface
     SysSettings.numBuses = 1;
     SysSettings.isWifiActive = false;
     SysSettings.isWifiConnected = false;
@@ -134,7 +135,7 @@ void loadSettings()
     for (int i = 0; i < SysSettings.numBuses; i++)
     {
         sprintf(buff, "can%ispeed", i);
-        settings.canSettings[i].nomSpeed = nvPrefs.getUInt(buff, 500000);
+        settings.canSettings[i].nomSpeed = nvPrefs.getUInt(buff, 125000);
         sprintf(buff, "can%i_en", i);
         settings.canSettings[i].enabled = nvPrefs.getBool(buff, (i < 2) ? true : false);
         sprintf(buff, "can%i-listenonly", i);
@@ -160,8 +161,8 @@ void setup()
     // to deal with this issue.
     //  Serial.setTxTimeoutMs(2);
 #endif
-    // Serial.begin(1000000); //for production
-    Serial.begin(115200); // for testing
+    Serial.begin(2000000); //for production
+    // Serial.begin(115200); // for testing
     // delay(2000); //just for testing. Don't use in production
 
     espChipRevision = ESP.getChipRevision();
